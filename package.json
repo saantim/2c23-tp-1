@@ -1,0 +1,18 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "> **La fecha de entrega para el informe y el código es el jueves 05/10** :bangbang:",
+  "main": "statsd.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "dependencies": {
+    "axios": "^1.5.0",
+    "express": "^4.18.2",
+    "fast-xml-parser": "^4.3.0",
+    "metar-decoder": "^1.0.3"
+  }
+}
