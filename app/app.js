@@ -7,7 +7,6 @@ const { decode } = require('metar-decoder');
 
 const parser = new XMLParser();
 
-
 app.get('/metar', (req, res) => {
   station = req.query.station;
   
@@ -28,12 +27,4 @@ app.get('/metar', (req, res) => {
     res.send("Error, please try again", err);
   });
 
-})
-
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
 })
