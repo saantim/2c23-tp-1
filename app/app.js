@@ -28,14 +28,11 @@ app.get('/metar', (req, res) => {
 
 })
 
-async function getQuote(){
-    let res = await fetch(`https://api.quotable.io/quotes/random`).then(response => response.json());
-    res = {"Quote": res[0]["content"], "Author": res[0]["author"]};
-    return res;
-  }
-
-app.get('/quote', (req,res)=>{
-    getQuote().then(response => res.send(response))
+app.get('/quote', async (req,res)=>{
+    const quote_response = await axios.get(`https://api.quotable.io/quotes/random`);
+    let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+    
+    res.status(200).send(quote);
 })
 
 app.get('/ping', (req, res) => {
