@@ -1,0 +1,18 @@
+/* 
+Quote:
+    Aplicación: no    
+spaceflight_news
+    Aplicación: si
+    Tamaño: 1, lista de los titulos
+    Llenado:
+        Active population: 
+    Tiempo de vida: 10 minutos
+    Vaciado: la info se mantiene
+METAR
+    Aplicación: si
+    Tamaño: 1 por aeropuerto
+    Llenado:
+        lazy population: lo guarda al ser llamado por primera vez al aerodromo
+    Tiempo de vida: 30 minutos
+    Vaciado: se mantiene la info
+*/
