@@ -50,8 +50,9 @@ app.get('/metar', async (req, res) => {
 })
 
 app.get('/quote', async (req,res)=>{
-    const quote_response = await axios.get(`https://api.quotable.io/quotes/random`);
-    let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+    client_quote = await client.get('quote');
+    quote = JSON.parse(client_quote); 
+    activePopulationQuote();
     
     res.status(200).send(quote);
 })
@@ -89,7 +90,7 @@ app.get('/spaceflight_news', async (req, res) => {
     res.status(200).send(titles);
 })
 
-async function activePopulation(){
+async function activePopulationSpaceFlight(){
   // Busco los datos para spaceflight apenas se abre la app
   let titles = [];
   const response = await axios.get(`http://api.spaceflightnewsapi.net/v3/articles?_limit=5`)
@@ -99,7 +100,21 @@ async function activePopulation(){
     }
   })
   clnt.set('titles', JSON.stringify(titles));
+ 
+
+}
+
+async function activePopulationQuote(){
+  const quote_response = await axios.get(`https://api.quotable.io/quotes/random`);
+  let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+  clnt.set('quote', JSON.stringify(quote));
 }
 
 
-app.listen(3000, async () => {clnt = await client.connect();; console.log("Escuchando en el puerto", 3000); activePopulation();setIntervalAsync(async ()=> await activePopulation(), 60000)})
+app.listen(3000, async () => {
+  clnt = await client.connect(); 
+  console.log("Escuchando en el puerto", 3000);
+  activePopulationSpaceFlight();
+  activePopulationQuote();
+  setIntervalAsync(async ()=> await activePopulationSpaceFlight(), 60000);
+  setIntervalAsync(async ()=> await activePopulationQuote(), 60000); })
