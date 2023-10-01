@@ -1,12 +1,17 @@
 /* 
 Quote:
-    Aplicación: no    
+    Aplicación: si
+    Tamaño : 1 quote
+    Llenado:
+        Active population:
+    Tiempo de vida: permanente hasta ser accedido
+    vaciado: cuando es tomado del cache, se remplaza por uno nuevo   
 spaceflight_news
     Aplicación: si
     Tamaño: 1, lista de los titulos
     Llenado:
         Active population: 
-    Tiempo de vida: 10 minutos
+    Tiempo de vida: peermanente hasta ser accedido, se actualiza cada 10 minutos
     Vaciado: la info se mantiene
 METAR
     Aplicación: si
