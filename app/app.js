@@ -14,25 +14,30 @@ app.get('/metar', (req, res) => {
     const parsed = parser.parse(response.data);
 
     if (parsed.response.data == ''){
-      res.send("Please verify your OACI code!");
+      res.status(404).send("Please verify your OACI code!");
 
     } else {
       const decoded = decode(parsed.response.data.METAR.raw_text);
-      res.send(decoded);
+      res.status(200).send(decoded);
     }
 
   })
   .catch(err => {
-    res.send("Error, please try again", err);
+    res.status(500).send(`Error: ${err}`);
   });
 
 })
 
 app.get('/quote', async (req,res)=>{
-    const quote_response = await axios.get(`https://api.quotable.io/quotes/random`);
-    let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+    await axios.get(`https://api.quotable.io/quotes/random`)
+    .then(function (quote_response) {
+      let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+      res.status(200).send(quote);
+    })
+    .catch(function (error){
+      res.status(500).send(`Error: ${error}`);
+    });
     
-    res.status(200).send(quote);
 })
 
 app.get('/ping', (req, res) => {
