@@ -3,6 +3,9 @@ version: '3'
 services:
     node:
         build: ./app
+        deploy: # You must run docker-compose with --compatibility flag: "$docker-compose --compatibility up"
+            mode: replicated
+            replicas: 3
 
     nginx:
         image: nginx:1.25.2
