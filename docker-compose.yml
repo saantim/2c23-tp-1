@@ -5,6 +5,8 @@ services:
         build: ./app
         volumes:
             - ./app/app.js:/opt/app/app.js
+        links:
+            - graphite
 
     nginx:
         image: nginx:1.25.2
