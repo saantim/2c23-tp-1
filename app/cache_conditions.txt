@@ -18,6 +18,6 @@ METAR
     Tamaño: 1 por aeropuerto
     Llenado:
         lazy population: lo guarda al ser llamado por primera vez al aerodromo
-    Tiempo de vida: 30 minutos
+    Tiempo de vida: 10 minutos
     Vaciado: se mantiene la info
 */
