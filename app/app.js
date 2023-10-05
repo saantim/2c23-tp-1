@@ -41,25 +41,29 @@ app.get('/metar', async (req, res) => {
     const end = Date.now();
     const duration = end - start;
     statsd.timing('metar_response_time', duration);
-
     const parsed = parser.parse(response.data);
 
-    if (parsed.response.data == ''){
-      res.status(404).send("Please verify your OACI code!");
-
-    } else {
-      const decoded = decode(parsed.response.data.METAR.raw_text);
-      client.set(station, JSON.stringify(decoded));
-      client.expire(station, 600);
-      res.status(200).send(decoded);
+    if (response.status == 200){
+      if (parsed.response.data == ''){
+        res.status(404).send("Please verify your OACI code!");
+      }else {
+          //console.log(parsed.response.data);
+          try {
+            client.set(station, parsed.response.data.METAR[0].raw_text);
+            client.expire(station, 600);
+            res.status(200).send(parsed.response.data.METAR[0].raw_text);
+          } catch (error) {
+            client.set(station, parsed.response.data.METAR.raw_text);
+            client.expire(station, 600);
+            res.status(200).send(parsed.response.data.METAR.raw_text);
+          }
+        } 
+    }else{
+      var status = response.status == 496 ? 500 : response.status;
+      res.status(status).send();
     }
-
   })
-  .catch(err => {
-    res.status(500).send(`Error: ${err}`);
-  });
-  }
-})
+}})
 
 app.get('/quote', async (req,res)=>{
     const start = Date.now();
@@ -73,7 +77,7 @@ app.get('/quote', async (req,res)=>{
 })
 
 app.get('/ping', (req, res) => {
-    res.send("pong");
+    res.status(200).send("pong");
 });
 
 app.get('/spaceflight_news', async (req, res) => {
@@ -85,6 +89,7 @@ app.get('/spaceflight_news', async (req, res) => {
     const end = Date.now()
     const duration = end - start;
     statsd.timing('spaceflight_response_time', duration);
+    
 })
 
 async function activePopulationSpaceFlight(){
@@ -101,23 +106,28 @@ async function activePopulationSpaceFlight(){
     }
   })
   clnt.set('titles', JSON.stringify(titles));
+  
 }
 
 async function activePopulationQuote(){
   const start = Date.now();
   await axios.get(`https://api.quotable.io/quotes/random`)
     .then(function (quote_response) {
-      const end = Date.now();
-      const duration = end - start;
-      statsd.timing('quote_api_response_time', duration);
-      let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
-      clnt.set('quote', JSON.stringify(quote));
+      if (quote_response.status == 200) {
+        const end = Date.now();
+        const duration = end - start;
+        statsd.timing('quote_api_response_time', duration);
+        let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
+        clnt.set('quote', JSON.stringify(quote));
+        res.status(200).send(quote);
+      } else {
+        res.status(quote_response.status).send();
+      }
     })/*.catch(function (error){
       res.status(500).send(`Error: ${error}`);
     })*/;
   
 }
-
 
 app.listen(3000, async () => {
   clnt = await client.connect(); 
