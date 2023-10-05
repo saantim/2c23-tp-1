@@ -26,6 +26,15 @@ config:
     - name: Plain
       duration: 15
       arrivalRate: 100
+
+    - name: Cooling1
+      duration: 5
+      arrivalRate: 100
+      rampTo: 1
+
+    - name: Cooling2
+      duration: 10
+      arrivalRate: 1
     
 
 scenarios:
