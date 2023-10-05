@@ -6,6 +6,10 @@ services:
         deploy: # You must run docker-compose with --compatibility flag: "$docker-compose --compatibility up"
             mode: replicated
             replicas: 3
+        volumes:
+            - ./app/app.js:/opt/app/app.js
+        links:
+            - graphite
 
     nginx:
         image: nginx:1.25.2
@@ -46,6 +50,11 @@ services:
             - "/var/run:/var/run:rw"
             - "/sys:/sys:ro"
             - "/var/lib/docker/:/var/lib/docker:ro"
+
+    # artillery:
+    #     image: artilleryio/artillery:2.0.0-37
+    #     volumes:
+    #         - "./perf:/scripts"
 
 volumes:
     grafana_config:
