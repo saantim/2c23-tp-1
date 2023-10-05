@@ -100,7 +100,7 @@ async function activePopulationSpaceFlight(){
   const response = await axios.get(`http://api.spaceflightnewsapi.net/v3/articles?_limit=5`)
   const end = Date.now();
   const duration = end - start;
-  statsd.timing('spaceflight_api_response_time', duration);
+  statsd.timing('spaceflight_response_time', duration);
   response.data.forEach(element => {
     if(element.hasOwnProperty('title')){
         titles.push(element.title);
@@ -117,7 +117,7 @@ async function activePopulationQuote(){
       if (quote_response.status == 200) {
         const end = Date.now();
         const duration = end - start;
-        statsd.timing('quote_api_response_time', duration);
+        statsd.timing('quote_response_time', duration);
         let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
         clnt.set('quote', JSON.stringify(quote));
         res.status(200).send(quote);
