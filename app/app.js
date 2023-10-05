@@ -17,25 +17,24 @@ const statsd = new StatsD({
 });
 
 
+const client = redis.createClient({'url': 'redis://redis:6379'});
 
-const client = redis.createClient({
-  host: 'redis',
-  port: 6379
-})
+// const client = redis.createClient({
+//   host: '127.0.0.1',
+//   port: 6379
+// })
 
 
 
 app.get('/metar', async (req, res) => {
   station = req.query.station;
-  const start = Date.now();
   clientMetar = await client.get(station)
 
+
   if(clientMetar){
-    res.send(JSON.parse(clientMetar));
-    const end = Date.now();
-    const duration = end - start;
-    statsd.timing('metar_response_time', duration);
+    res.send(clientMetar);
   }else{
+    const start = Date.now();
     axios.get(`https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=${station}&hoursBeforeNow=1`)
   .then(response => {
     const end = Date.now();
@@ -66,15 +65,10 @@ app.get('/metar', async (req, res) => {
 }})
 
 app.get('/quote', async (req,res)=>{
-    const start = Date.now();
     client_quote = await client.get('quote');
     quote = JSON.parse(client_quote); 
-    activePopulationQuote();
     res.status(200).send(quote);
-    const end = Date.now();
-    const duration = end - start;
-    statsd.timing('quote_response_time', duration);
-    
+    await activePopulationQuote();
 })
 
 app.get('/ping', (req, res) => {
@@ -82,15 +76,10 @@ app.get('/ping', (req, res) => {
 });
 
 app.get('/spaceflight_news', async (req, res) => {
-    const start = Date.now();
     let titles = [];
     clientTitles = await client.get('titles');   
     titles = JSON.parse(clientTitles);  
     res.status(200).send(titles);
-    const end = Date.now()
-    const duration = end - start;
-    statsd.timing('spaceflight_response_time', duration);
-    
 })
 
 async function activePopulationSpaceFlight(){
@@ -107,7 +96,6 @@ async function activePopulationSpaceFlight(){
     }
   })
   clnt.set('titles', JSON.stringify(titles));
-  
 }
 
 async function activePopulationQuote(){
@@ -120,14 +108,8 @@ async function activePopulationQuote(){
         statsd.timing('quote_response_time', duration);
         let quote = {"Quote": quote_response.data[0]["content"], "Author": quote_response.data[0]["author"]};
         clnt.set('quote', JSON.stringify(quote));
-        res.status(200).send(quote);
-      } else {
-        res.status(quote_response.status).send();
       }
-    })/*.catch(function (error){
-      res.status(500).send(`Error: ${error}`);
-    })*/;
-  
+    });
 }
 
 app.listen(3000, async () => {
