@@ -11,17 +11,32 @@ config:
   pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
 
   phases:
-    - name: Ramp
-      duration: 30
-      arrivalRate: 1
-      rampTo: 5
-    - name: Plain
+    - name: Warmup
       duration: 60
-      arrivalRate: 5
+      arrivelRate: 1
+      rampTo: 3
+
+    - name: Ramp
+      duration: 60
+      arrivalRate: 3
+      rampTo: 20 
+
+    - name: Plain
+      duration: 30
+      arrivalRate: 20
+
+    - name: Cooling1
+      duration: 5
+      arrivalRate: 20
+      rampTo: 1
+
+    - name: Cooling2
+      duration: 10
+      arrivalRate: 1
     
 
 scenarios:
-  - name: Root (/)
+  - name: Ping (/ping)
     flow:
       - get:
-          url: '/'
+          url: '/ping'

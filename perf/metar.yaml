@@ -1,0 +1,82 @@
+config:
+  environments:
+    api:
+      target: 'http://localhost:5555/api'
+      http:
+        timeout: 2
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
+
+  phases:
+    - name: Warmup
+      duration: 30
+      arrivelRate: 10
+      rampTo: 30
+
+    - name: Ramp
+      duration: 60
+      arrivalRate: 30
+      rampTo: 100
+
+    - name: Plain
+      duration: 15
+      arrivalRate: 100
+  
+    - name: Cooling1
+      duration: 5
+      arrivalRate: 100
+      rampTo: 1
+
+    - name: Cooling2
+      duration: 10
+      arrivalRate: 1
+
+  variables:
+    station:
+      - "KATL"
+      - "KDFW"
+      - "KDEN"
+      - "KORD"
+      - "OMDB"
+      - "KLAX"
+      - "LTFM"
+      - "EGLL"
+      - "VIDP"
+      - "LFPG"
+      - "KJFK"
+      - "KLAS"
+      - "EHAM"
+      - "KMIA"
+      - "LEMD"
+      - "RJTT"
+      - "KMCO"
+      - "EDDF"
+      - "KCLT"
+      - "MMMX"
+      - "KSEA"
+      - "KPHX"
+      - "KEWR"
+      - "KSFO"
+      - "LEBL"
+      - "KIAH"
+      - "WIII"
+      - "VABB"
+      - "CYYZ"
+      - "KBOS"
+
+
+scenarios:
+  - name: Metar (/metar)
+    flow:
+      - get:
+          url: '/metar?station={{station}}'
+
+# Posibles Soluciones:
+# CACHE
+# Rate-Limiting
+# Replication
