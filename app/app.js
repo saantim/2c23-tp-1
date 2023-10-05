@@ -19,7 +19,7 @@ const statsd = new StatsD({
 
 
 const client = redis.createClient({
-  host: '127.0.0.1',
+  host: 'redis',
   port: 6379
 })
 

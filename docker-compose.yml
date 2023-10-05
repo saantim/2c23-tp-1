@@ -7,6 +7,7 @@ services:
             - ./app/app.js:/opt/app/app.js
         links:
             - graphite
+            - redis
 
     nginx:
         image: nginx:1.25.2
@@ -47,6 +48,12 @@ services:
             - "/var/run:/var/run:rw"
             - "/sys:/sys:ro"
             - "/var/lib/docker/:/var/lib/docker:ro"
+
+    redis:
+        image: redis/redis-stack-server:latest
+        ports:
+            - "6379:6379"
+
 
 volumes:
     grafana_config:
