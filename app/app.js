@@ -21,21 +21,26 @@ app.get('/metar', (req, res) => {
     const end = Date.now();
     const duration = end - start;
     statsd.timing('metar_response_time', duration);
-
     const parsed = parser.parse(response.data);
-
-    if (parsed.response.data == ''){
-      res.status(404).send("Please verify your OACI code!");
-
-    } else {
-      const decoded = decode(parsed.response.data.METAR.raw_text);
-      res.status(200).send(decoded);
+    //console.log(response.status);
+    if (response.status == 200){
+      if (parsed.response.data == ''){
+        res.status(404).send("Please verify your OACI code!");
+      }else {
+          //console.log(parsed.response.data);
+          try {
+            res.status(200).send(parsed.response.data.METAR[0].raw_text);
+          } catch (error) {
+            res.status(200).send(parsed.response.data.METAR.raw_text);
+          }
+        } 
+    }else{
+      var status = response.status == 496 ? 500 : response.status;
+      res.status(status).send();
     }
-
+    
   })
-  .catch(err => {
-    res.status(500).send(`Error: ${err}`);
-  });
+
 
 })
 
@@ -50,7 +55,7 @@ app.get('/quote', async (req,res)=>{
       res.status(200).send(quote);
     })
     .catch(function (error){
-      res.status(500).send(`Error: ${error}`);
+      res.status(429).send(`Error: ${error}`);
     });
     
 })
