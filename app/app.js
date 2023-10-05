@@ -72,6 +72,7 @@ app.get('/quote', async (req,res)=>{
     activePopulationQuote();
     res.status(200).send(quote);
     const end = Date.now();
+    const duration = end - start;
     statsd.timing('quote_response_time', duration);
     
 })
